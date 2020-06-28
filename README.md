@@ -1,2 +1,3 @@
-# web
-Personal website
+# shluboto.dev
+
+Personal development website.
