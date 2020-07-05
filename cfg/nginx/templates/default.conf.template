@@ -1,0 +1,16 @@
+server {
+  include /etc/nginx/snippets/listen_ports.conf;
+  include /etc/nginx/snippets/default_headers.conf;
+  include /etc/nginx/snippets/auth_basic.conf;
+
+  ssl_certificate /etc/nginx/certs/fullchain.pem;
+  ssl_certificate_key /etc/nginx/certs/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+
+  server_name shluboto.dev;
+
+  location / {
+    return 200 'Hi there';
+    add_header Content-Type text/plain;
+  }
+}

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("SENTRY_VERSION")
+
+exec "docker run --name=sentry --rm "\
+     "getsentry/sentry:#{image_version}"

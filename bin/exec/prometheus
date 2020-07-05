@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("PROMETHEUS_VERSION")
+
+exec "docker run --name=prometheus --rm "\
+     "prom/prometheus:#{image_version}"

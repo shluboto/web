@@ -1,0 +1,15 @@
+upstream grafana {
+  server ${HOST_IP}:${GRAFANA_PORT};
+}
+
+server {
+  server_name grafana.shluboto.dev;
+
+  location / {
+    include /etc/nginx/snippets/proxy_headers.conf;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header Connection "";
+    proxy_pass http://grafana;
+  }
+}

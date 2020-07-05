@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+base_dir = File.expand_path(File.join(__dir__, "..", ".."))
+
+require "dotenv"
+Dotenv.load(File.join(base_dir, ".env"))
+
+crt_dir = File.join(ENV.fetch("CRT_DIR"), "shluboto")
+cfg_dir = File.join(base_dir, "cfg", "nginx", "templates")
+
+exec "docker run --name=nginx --rm "                   \
+     "-p :$NGINX_PORT:$NGINX_PORT "                    \
+     "-p :$NGINX_SSL_PORT:$NGINX_SSL_PORT "            \
+     "-p :$GRAFANA_PORT:$GRAFANA_PORT "                \
+     "-p :$MATTERMOST_PORT:$MATTERMOST_PORT "          \
+     "-v $DOT_DIR/nginx/snippets:/etc/nginx/snippets " \
+     "-v $PWD_DIR/auth:/etc/nginx/auth "               \
+     "-v #{crt_dir}:/etc/nginx/certs "                 \
+     "-v #{cfg_dir}:/etc/nginx/templates "             \
+     "-e NGINX_PORT "                                  \
+     "-e NGINX_SSL_PORT "                              \
+     "-e GRAFANA_PORT "                                \
+     "-e MATTERMOST_PORT "                             \
+     "-e HOST_IP "                                     \
+     "nginx:$NGINX_VERSION"

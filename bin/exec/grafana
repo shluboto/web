@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("GRAFANA_VERSION")
+
+exec "docker run --name=grafana --rm "\
+     "grafana/grafana:#{image_version}"

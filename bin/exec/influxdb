@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("INFLUXDB_VERSION")
+
+exec "docker run --name=influxdb --rm "\
+     "influxdb:#{image_version}"

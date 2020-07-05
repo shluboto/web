@@ -1,0 +1,48 @@
+upstream mattermost {
+  server ${HOST_IP}:${MATTERMOST_PORT};
+}
+
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
+
+server {
+  server_name mattermost.shluboto.dev;
+
+  location ~ /api/v[0-9]+/(users/)?websocket$ {
+    include /etc/nginx/snippets/proxy_headers.conf;
+
+    client_max_body_size 50M;
+    client_body_timeout 60;
+
+    proxy_set_header Connection "upgrade";
+
+    send_timeout 300;
+    lingering_timeout 5;
+
+    proxy_buffers 256 16k;
+    proxy_buffer_size 16k;
+    proxy_connect_timeout 90;
+    proxy_send_timeout 300;
+    proxy_read_timeout 90s;
+    proxy_pass http://mattermost;
+  }
+
+  location / {
+    include /etc/nginx/snippets/proxy_headers.conf;
+
+    client_max_body_size 50M;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header Connection "";
+
+    proxy_buffers 256 16k;
+    proxy_buffer_size 16k;
+    proxy_read_timeout 600s;
+    proxy_cache mattermost_cache;
+    proxy_cache_revalidate on;
+    proxy_cache_min_uses 2;
+    proxy_cache_use_stale timeout;
+    proxy_cache_lock on;
+    proxy_http_version 1.1;
+    proxy_pass http://mattermost;
+  }
+}

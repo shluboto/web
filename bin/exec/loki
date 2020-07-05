@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("LOKI_VERSION")
+
+exec "docker run --name=loki --rm "\
+     "grafana/loki:#{image_version}"

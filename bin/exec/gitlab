@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+image_version = ENV.fetch("GITLAB_VERSION")
+
+exec "docker run --name=gitlab --rm "\
+     "gitlab/gitlab-ce:#{image_version}"

@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "dotenv/load"
+
+PID_FILE_PATH = File.join(__dir__, "..", "pids", "runner.pid").freeze
+
+def start
+  @pid = spawn("foreman start")
+  File.write(PID_FILE_PATH, @pid)
+
+  Process.waitall
+end
+
+def stop
+  begin
+    Process.kill("INT", @pid)
+  rescue StandardError => e
+    warn(e)
+  end
+
+  FileUtils.rm(PID_FILE_PATH)
+  Process.waitall
+end
+
+def restart
+  begin
+    Process.kill("INT", Process.pid)
+  rescue StandardError => e
+    warn(e)
+  end
+
+  Process.wait
+  start
+end
+
+begin
+  trap("TERM")  { stop }
+  trap("INT")   { stop }
+  trap("USR1")  { restart }
+  trap("USR2")  { restart }
+  trap("HUP")   { restart }
+
+  start
+rescue StandardError => e
+  stop
+  raise e
+end

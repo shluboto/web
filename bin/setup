@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require "dotenv/load"
+
+def setup
+  spawn("docker pull nginx:#{ENV.fetch('NGINX_VERSION')}")
+  spawn("docker pull gitlab/gitlab-ce:#{ENV.fetch('GITLAB_VERSION')}")
+  spawn("docker pull influxdb:#{ENV.fetch('INFLUXDB_VERSION')}")
+  spawn("docker pull prom/prometheus:#{ENV.fetch('PROMETHEUS_VERSION')}")
+  spawn("docker pull grafana/grafana:#{ENV.fetch('GRAFANA_VERSION')}")
+  spawn("docker pull grafana/loki:#{ENV.fetch('LOKI_VERSION')}")
+  spawn("docker pull getsentry/sentry:#{ENV.fetch('SENTRY_VERSION')}")
+  spawn("docker pull mattermost/mattermost-preview:#{ENV.fetch('MATTERMOST_VERSION')}")
+
+  Process.waitall
+end
+
+def cleanup
+  # NOOP
+end
+
+begin
+  trap("TERM")  { stop }
+  trap("INT")   { stop }
+  setup
+rescue StandardError => e
+  cleanup
+  raise e
+end
